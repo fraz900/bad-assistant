@@ -12,6 +12,7 @@ run
 If I wanted to execute example, I would say "run program" and then "example".
 
 statements marked with <> indicate that it is a user changeable word.
+
 Inside the <> will be the name and default value of the varriable e.g. <keyword:protocol>
 
 
@@ -45,5 +46,6 @@ Inside the <> will be the name and default value of the varriable e.g. <keyword:
 
 
 further setup:
+
 -during the initial setup of the program, it will create a folder called "protocol_music" in your defualt music file
  any music you want the program to be able to play must be placed in this folder, and must be a .wav file
