@@ -12,6 +12,7 @@ import simpleaudio as sa
 import getpass
 import os
 import random
+import hashlib
 
 engine = pyttsx3.init()
 r = sr.Recognizer()
@@ -72,10 +73,12 @@ global timer_running
 timer_running = False 
 check_connected()
 global playing
+global restart
 playing = False
 restart = True
 class user_details():
     def __init__(self):
+        global restart
         try:
             file = open("user_details.txt","r")
             details = file.read()
@@ -83,6 +86,7 @@ class user_details():
             details = details.split("\n")
             self.name = details[0]
             self.keyword = details[1]
+            self.password = details[2]
             restart = False
         except:
             None
@@ -112,7 +116,8 @@ class user_details():
                                 break
                             else:
                                 file = open("user_details.txt","w")
-                                entry = (str(name)) + "\n protocol \n"
+                                self.password = hashlib.sha256("alpha sierra 11".encode()).hexdigest()
+                                entry = (str(self.name)) + "\nprotocol \n" + str(self.password)+"\n"
                                 file.write(entry)
                                 file.close()
                                 self.keyword = "protocol"
@@ -120,20 +125,23 @@ class user_details():
                                 break
                         if a:
                             break
-                    except:
+                    except Exception as e:
+                        print(e)
                         say("there was an unknown error, please try again")
                 say("you have completed all madatory setup, however, there are many protocols in this program that require extra setup to use.")
                 say("please check the documentation to find instructions on this")
     def repr(self):
         message = "name:",self.name
         message1 = "keyword:",self.keyword
+        message2 = "admin password:","REDACTED"
         say(message)
         say(message1)
+        say(message2)
 
 ud = user_details()
 message = "hi there", ud.name, "let's get started"
+admin = False
 say(message)
-
 while True:
     print("loop start")
     print(ud.keyword)
@@ -164,12 +172,16 @@ while True:
                             say("are you sure you wish to delete all account details?")
                             response = hear()
                             if "yes" in response or "correct" in response:
-                                os.remove("user_details.txt")
+                                if admin:
+                                    os.remove("user_details.txt")
+                                else:
+                                    say("please login to the admin account first")
+                                break
                             else:
                                 say("action cancelled")
                                 break
 
-                        elif "data" in statement1: #DOTHIS
+                        elif "data" in statement1: 
                             ud.repr()
                             say("would you like to delete this data?")
                             response = hear()
@@ -191,6 +203,43 @@ while True:
                             file = open("user_details.txt","w")
                             file.write(ncontent)
                             file.close()
+                        elif "admin" in statement1 or "administrator" in statement1 and "password" in statement1:
+                            say("would you like to change the administrator password?")
+                            check = hear()
+                            if "yes" in check or "correct" in check:
+                                if admin:
+                                    while True:
+                                        say("what would you like your new password to be?")
+                                        new = hear()
+                                        response = "is",new,"correct?"
+                                        say(response)
+                                        check = hear()
+                                        if "yes" in check or "correct" in check:
+                                            file = open("user_details.txt","r")
+                                            content = file.read()
+                                            file.close()
+                                            content = content.split("\n")
+                                            new = hashlib.sha256(new.encode()).hexdigest()
+                                            new = str(new)
+                                            content[2] = new
+                                            ncontent = "\n".join(content)
+                                            file = open("user_details.txt","w")
+                                            file.write(ncontent)
+                                            file.close()
+                                            say("password reset")
+                                            break
+                                        else:
+                                            say("do you want to try again?")
+                                            check = hear()
+                                            if "yes" in check or "correct" in check:
+                                                say("retrying")
+                                            else:
+                                                say("cancelling")
+                                                break
+                                else:
+                                    say("please login to the administrator account first")
+                            else:
+                                say("ok, cancelling")
                         elif "network" in statement1:
                             a = check_connected()
                             if a:
@@ -289,7 +338,22 @@ while True:
                     result = ' '.join(resultwords)
                     answer = wikipedia.summary(result,sentences=2)
                     say(answer)
-                    
+                elif "admin" in statement or "administrator" in statement:
+                    password = ud.password
+                    say("say back to exit administrator login")
+                    while True:
+                        say("enter password")
+                        check = hear()
+                        check = check.lower()
+                        attempt = hashlib.sha256(check.encode()).hexdigest()
+                        if "back" in check:
+                            break
+                        elif password == attempt:
+                            admin = True
+                            say("administrator enabled")
+                            break
+                        else:
+                            say("password incorrect, try again, or say back to exit login")
                 elif "assassinate" in statement:
                     statement = statement.replace("assassinate","")
                     statement = statement.replace(ud.keyword,"")
