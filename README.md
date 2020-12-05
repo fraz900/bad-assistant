@@ -44,6 +44,9 @@ Inside the <> will be the name and default value of the varriable e.g. <keyword:
 
     shutdown
 
+other information:
+
+The default administrator password is "alpha sierra one one"
 
 further setup:
 
