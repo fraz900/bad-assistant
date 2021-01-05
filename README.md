@@ -40,7 +40,7 @@ Inside the <> will be the name and default value of the varriable e.g. <keyword:
 
     timer <seconds>
 
-    assassinate <name>
+    <question>
 
     shutdown
 
