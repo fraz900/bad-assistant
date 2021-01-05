@@ -354,11 +354,6 @@ while True:
                             break
                         else:
                             say("password incorrect, try again, or say back to exit login")
-                elif "assassinate" in statement:
-                    statement = statement.replace("assassinate","")
-                    statement = statement.replace(ud.keyword,"")
-                    message = "assassination commencing on",statement
-                    say(message)
                     
                 elif "shutdown" in statement:
                     say("shutting down")
